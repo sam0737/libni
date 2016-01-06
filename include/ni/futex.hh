@@ -35,13 +35,14 @@ struct Futex : public std::atomic<int32_t>
 {
   explicit Futex(int32_t value = 0) noexcept;
 
-  // Puts the thread to sleep if this->load() == expected. Returns true if
-  // this->load() != expected or when it has consumed a wake() event, false for
-  // any other return (signal, or spurious wakeup).
+  /// \brief Puts the thread to sleep if this->load() == expected.
+  /// \return Returns true if this->load() != expected or when it has consumed
+  ///         a wake() event, false for any other return (signal, or spurious
+  ///         wakeup).
   bool wait(int32_t expected, int wait_mask = -1) noexcept;
 
-  // Wakens up to count waiters where (wait_mask & wake_mask) != 0, returning
-  // the number of awoken threads.
+  /// \brief Wakens up to count waiters where (wait_mask & wake_mask) != 0.
+  /// \return Returns the number of awoken threads.
   int wake(int count = INT_MAX, int wake_mask = -1) noexcept;
 };
 

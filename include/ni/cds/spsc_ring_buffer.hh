@@ -60,9 +60,9 @@ struct SPSCRingBufferFiller<T, Empty, Fill, typename std::enable_if<
 
 } // namespace details
 
-/// Wait-free single producer single consumer ring buffer
+/// \brief Wait-free single producer single consumer ring buffer
 ///
-/// *Reference*
+/// **Reference**
 ///
 /// * Massimo Torquati, "Single-Producer/Single-Consumer Queue on Shared Cache
 /// Multi-Core Systems", TR-10-20, Computer Science Department, University of
@@ -74,47 +74,47 @@ struct SPSCRingBufferFiller<T, Empty, Fill, typename std::enable_if<
 /// 18th Intl. Euro-Par 2012 Parallel Processing, Rhodes Island, Greece, 2012,
 /// pp. 662-673. doi:10.1007/978-3-642-32820-6_65
 ///
-/// @param T type of the elements
-/// @param Empty `empty` or `null` value of type T (defaults to `T()`)
-/// @param Fill
+/// \param T type of the elements
+/// \param Empty `empty` or `null` value of type T (defaults to `T()`)
+/// \param Fill
 ///
 template <typename T, T Empty = T(), typename Fill = T>
 class SPSCRingBuffer
 {
 public:
-  /// \brief create a new ring buffer
-  /// @param size the maximum size of the ring buffer, must be power of two (
+  /// \brief Create a new ring buffer
+  /// \param size the maximum size of the ring buffer, must be power of two (
   ///        and greater than 1 )
   explicit SPSCRingBuffer(size_t size);
   SPSCRingBuffer(const SPSCRingBuffer&)=delete;
   SPSCRingBuffer& operator==(const SPSCRingBuffer&)=delete;
   ~SPSCRingBuffer();
 
-  /// @return size of the whole ring buffer
+  /// \return size of the whole ring buffer
   size_t size() const;
 
-  /// @return number of elements currently inside the ring buffer
+  /// \return number of elements currently inside the ring buffer
   size_t len() const;
 
-  /// @return true if the buffer is empty
+  /// \return true if the buffer is empty
   bool empty() const;
 
-  /// @return true if there are empty slots
+  /// \return true if there are empty slots
   bool available() const;
 
-  /// \brief push new element into the ring buffer
-  /// @param element element to push
-  /// @return whether the element was pushed into the ring buffer
+  /// \brief Push new element into the ring buffer
+  /// \param element element to push
+  /// \return whether the element was pushed into the ring buffer
   bool push(const T& element);
 
-  /// \brief pop an element from the ring buffer
-  /// @return nullptr the ring buffer is empty
+  /// \brief Pop an element from the ring buffer
+  /// \return nullptr the ring buffer is empty
   T pop();
 
-  /// @return the next element to be popped without removing it
+  /// \return the next element to be popped without removing it
   T top() const;
 
-  /// \brief clear the ring buffer
+  /// \brief Clear the ring buffer
   void reset();
 
 private:
