@@ -1,7 +1,7 @@
 #include <thread>
 
 #include <ni/cds/spsc_buffer_list.hh>
-#include "../catch.hh"
+#include <catch.hpp>
 
 using namespace ni;
 

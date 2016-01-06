@@ -5,7 +5,7 @@
 #include <ni/logging/logger.hh>
 #include <ni/logging/logging.hh>
 #include <ni/logging/sink.hh>
-#include "catch.hh"
+#include <catch.hpp>
 
 using namespace ni;
 

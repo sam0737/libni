@@ -19,11 +19,14 @@
 # THE SOFTWARE.
 
 file(GLOB_RECURSE test_headers *.hh)
+set(CATCH_DIR ${deps}/catch/single_include)
 
 add_library(test_driver OBJECT
   ${test_headers} # for QtCreator
   test.cc
 )
+
+target_include_directories(test_driver PUBLIC ${CATCH_DIR})
 
 target_compile_options(test_driver PUBLIC
   -g
@@ -42,6 +45,7 @@ function(add_tests)
       $<TARGET_OBJECTS:test_driver>
       ${BACKWARD_ENABLE}
     )
+    target_include_directories(${target} PUBLIC ${CATCH_DIR})
     target_link_libraries(${target}
       ni
     )

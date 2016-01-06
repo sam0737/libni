@@ -4,3 +4,6 @@
 [submodule "cotire"]
 	path = thirdparty/cotire
 	url = https://github.com/sakra/cotire.git
+[submodule "catch"]
+	path = thirdparty/catch
+	url = https://github.com/philsquared/Catch.git
