@@ -1,0 +1,6 @@
+[submodule "backward"]
+	path = thirdparty/backward
+	url = https://github.com/bombela/backward-cpp.git
+[submodule "cotire"]
+	path = thirdparty/cotire
+	url = https://github.com/sakra/cotire.git
