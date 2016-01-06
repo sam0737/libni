@@ -69,7 +69,7 @@
 
   #ifndef LOGF_LEVEL
   #define LOGF_LEVEL(LOGGER, LEVEL, FMT, ...) \
-    LOG_LEVEL(LOGGER, LEVEL).write(FMT, ##__VA_ARGS__)
+    LOG_LEVEL(LOGGER, LEVEL).log(FMT, ##__VA_ARGS__)
   #endif // !defined(LOGF_LEVEL)
 
 #endif // !defined(LOG_LEVEL) || !defined(LOGF_LEVEL)
