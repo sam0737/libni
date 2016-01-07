@@ -58,4 +58,5 @@ add_subdirectory(cds)
 
 add_tests(
   logging
+  tagged_ptr
 )
