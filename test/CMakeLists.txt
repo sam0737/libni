@@ -43,13 +43,11 @@ function(add_tests)
     add_executable(${target}
       ${target}.cc
       $<TARGET_OBJECTS:test_driver>
-      ${BACKWARD_ENABLE}
     )
     target_include_directories(${target} PUBLIC ${CATCH_DIR})
     target_link_libraries(${target}
       ni
     )
-    add_backward(${target})
     add_test(${name} ${target})
   endforeach(name)
 endfunction(add_tests)
