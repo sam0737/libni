@@ -103,6 +103,7 @@ file(GLOB_RECURSE headers
 include_directories(
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/include
+  ${deps}/pcg/include
 )
 link_directories(${CMAKE_BINARY_DIR}/lib)
 
