@@ -23,6 +23,10 @@ TEST_CASE("Logging")
     service.start();
   }
   Logger* logger = service.get("console");
+  std::string msg("logging starts");
+  string_view sv(msg.data() + 3, 5);
+  LOG_INFO(logger) << sv;
+
   std::vector<std::thread> threads;
   for (size_t i = 0; i < 3; ++i)
   {

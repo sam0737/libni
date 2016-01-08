@@ -36,8 +36,8 @@ namespace logging
   X(unsigned long long) \
   X(double) \
   X(long double) \
-  X(char)
-//  X(ni::fmt::CStringRef)
+  X(char) \
+  X(ni::fmt::StringRef)
 
 class Capture
 {
@@ -96,7 +96,6 @@ Capture::Capture(Logger* logger, LogSeverity severity, const char* file,
                     << " [" << file << ':' << line << "] ";
 }
 
-
 inline
 Capture::~Capture()
 {
@@ -106,7 +105,6 @@ Capture::~Capture()
     m_logger->log(std::move(m_message));
   }
 }
-
 
 template <typename... Args>
 inline void
@@ -132,7 +130,6 @@ FOR_ALL_INPUT_OVERLOAD_TYPES(DEFINE_INPUT_OP_OVERLOAD)
 
 #undef FOR_ALL_INPUT_OVERLOAD_TYPES
 
-
 template <typename T, typename Spec, typename FillChar>
 inline Capture&
 Capture::operator<<(ni::fmt::IntFormatSpec<T, Spec, FillChar> spec)
@@ -142,7 +139,6 @@ Capture::operator<<(ni::fmt::IntFormatSpec<T, Spec, FillChar> spec)
   return *this;
 }
 
-
 template <typename StrChar>
 inline Capture&
 Capture::operator<<(const ni::fmt::StrFormatSpec<StrChar>& spec)
@@ -151,7 +147,6 @@ Capture::operator<<(const ni::fmt::StrFormatSpec<StrChar>& spec)
     m_message->writer << spec;
   return *this;
 }
-
 
 template <typename T>
 inline Capture&
