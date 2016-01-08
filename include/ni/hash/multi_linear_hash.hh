@@ -19,7 +19,8 @@
 // THE SOFTWARE.
 #pragma once
 #include <array>
-//#include <cstring>
+#include <cstring>
+#include <limits>
 //#include <type_traits>
 
 #include <ni/random.hh>
@@ -47,9 +48,8 @@ public:
   MultiLinearDoubleHash();
   explicit MultiLinearDoubleHash(uint64_t seed);
 
-  uint32_t operator()(const uint8_t* bytes, size_t length) const noexcept;
+  uint32_t operator()(const void* input, size_t len) const noexcept;
   uint32_t operator()(const string_view str) const noexcept;
-  uint32_t operator()(const char* str, size_t length) const noexcept;
 
 private:
   std::array<uint64_t, l + 2> m_rand;
@@ -76,22 +76,22 @@ MultiLinearDoubleHash<l, Rng>::MultiLinearDoubleHash(uint64_t seed)
 
 template <size_t l, typename Rng>
 uint32_t
-MultiLinearDoubleHash<l, Rng>::operator()(const uint8_t* bytes, size_t length)
+MultiLinearDoubleHash<l, Rng>::operator()(const void* input, size_t len)
     const noexcept
 {
-  assert(bytes);
-  assert(length <= MAX_LEN);
+  assert(input);
+  assert(len <= MAX_LEN);
 
+  const uint8_t* bytes = reinterpret_cast<const uint8_t*>(input);
   const uint64_t* random = m_rand.data();
   uint64_t sum = *random++;
-  const uint8_t* const end = bytes + length;
+  const uint8_t* const end = bytes + len;
 
-  if (length & 1)
+  if (len & 1)
   {
     while (bytes != end)
-    {
       sum += *random++ * *bytes++;
-    }
+
     sum += *random;
   }
   else
@@ -112,28 +112,18 @@ template <size_t l, typename Rng>
 uint32_t
 MultiLinearDoubleHash<l, Rng>::operator()(const string_view str) const noexcept
 {
-  return this->operator()(reinterpret_cast<const uint8_t*>(str.data()),
-                          str.size());
-}
-
-template <size_t l, typename Rng>
-uint32_t
-MultiLinearDoubleHash<l, Rng>::operator()(const char* str, size_t length) const
-    noexcept
-{
-  return this->operator()(reinterpret_cast<const uint8_t*>(str), length);
+  return this->operator()(str.data(), str.size());
 }
 
 template <size_t l, typename Rng>
 void
 MultiLinearDoubleHash<l, Rng>::fill_random_data(Rng& rng)
 {
-  std::uniform_int_distribution<std::uint64_t> uniform_dist(0, UINT64_MAX);
+  std::uniform_int_distribution<uint64_t> uniform_dist(0,
+      std::numeric_limits<uint64_t>::max());
 
-  for (size_t i = 0, end = m_rand.size(); i < end; ++i)
-  {
-    m_rand[i] = uniform_dist(rng);
-  }
+  for (uint64_t& r: m_rand)
+    r = uniform_dist(rng);
 }
 
 } // namespace ni
