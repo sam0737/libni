@@ -1,3 +1,4 @@
 add_tests(
-    spsc
+  ms_queue
+  spsc
 )

@@ -45,6 +45,7 @@ public:
   Tag tag() const noexcept;
 
   bool operator==(TaggedPtr other) const noexcept;
+  bool operator!=(TaggedPtr other) const noexcept;
 
 private:
   static constexpr size_t VALUE_BITS = 48;
@@ -100,6 +101,13 @@ TaggedPtr<T>::operator==(TaggedPtr other) const noexcept
   return raw_value == other.raw_value;
 }
 
+template <typename T>
+bool
+TaggedPtr<T>::operator!=(TaggedPtr other) const noexcept
+{
+  return !(*this == other);
+}
+
 
 /// \brief 64-bit tagged pointer with two tags. Size of the first tag is 16-bit.
 ///        Size of the second tag depends on the alignment of the value it
@@ -124,6 +132,7 @@ public:
   Tag2 tag2() const noexcept;
 
   bool operator==(DoubleTagPtr other) const noexcept;
+  bool operator!=(DoubleTagPtr other) const noexcept;
 
 private:
   static constexpr size_t VALUE_BITS = 48;
@@ -194,8 +203,16 @@ DoubleTagPtr<T, T2, alignment>::operator==(DoubleTagPtr other) const noexcept
   return raw_value == other.raw_value;
 }
 
+template <typename T, typename T2, size_t alignment>
+bool
+DoubleTagPtr<T, T2, alignment>::operator!=(DoubleTagPtr other) const noexcept
+{
+  return !(*this == other);
+}
+
 
 /// \brief Provides atomic access to tagged pointers.
+/// The tag usually serves as an ABA counter in concurrent data structures.
 template <typename T>
 class AtomicTaggedPtr
 {
@@ -250,6 +267,7 @@ public:
       std::memory_order order = std::memory_order_seq_cst) volatile;
 
   bool operator==(TaggedPtr other) const noexcept;
+  bool operator!=(TaggedPtr other) const noexcept;
 
 private:
   std::atomic<typename T::RawType> m_raw_value;
@@ -356,9 +374,8 @@ bool
 AtomicTaggedPtr<T>::compare_exchange_weak(TaggedPtr& expected,
     TaggedPtr desired, std::memory_order success, std::memory_order failure)
 {
-  typename TaggedPtr::RawType raw_expected = expected.raw_value;
-  return m_raw_value.compare_exchange_weak(raw_expected, desired.raw_value,
-                                           success, failure);
+  return m_raw_value.compare_exchange_weak(expected.raw_value,
+       desired.raw_value, success, failure);
 }
 
 template <typename T>
@@ -367,9 +384,8 @@ AtomicTaggedPtr<T>::compare_exchange_weak(TaggedPtr& expected,
     TaggedPtr desired, std::memory_order success, std::memory_order failure)
     volatile
 {
-  typename TaggedPtr::RawType raw_expected = expected.raw_value;
-  return m_raw_value.compare_exchange_weak(raw_expected, desired.raw_value,
-                                           success, failure);
+  return m_raw_value.compare_exchange_weak(expected.raw_value,
+       desired.raw_value, success, failure);
 }
 
 template <typename T>
@@ -377,9 +393,8 @@ bool
 AtomicTaggedPtr<T>::compare_exchange_weak(TaggedPtr& expected,
     TaggedPtr desired, std::memory_order order)
 {
-  typename TaggedPtr::RawType raw_expected = expected.raw_value;
-  return m_raw_value.compare_exchange_weak(raw_expected, desired.raw_value,
-                                           order);
+  return m_raw_value.compare_exchange_weak(expected.raw_value,
+      desired.raw_value, order);
 }
 
 template <typename T>
@@ -387,9 +402,8 @@ bool
 AtomicTaggedPtr<T>::compare_exchange_weak(TaggedPtr& expected,
     TaggedPtr desired, std::memory_order order) volatile
 {
-  typename TaggedPtr::RawType raw_expected = expected.raw_value;
-  return m_raw_value.compare_exchange_weak(raw_expected, desired.raw_value,
-                                           order);
+  return m_raw_value.compare_exchange_weak(expected.raw_value,
+      desired.raw_value, order);
 }
 
 template <typename T>
@@ -397,9 +411,8 @@ bool
 AtomicTaggedPtr<T>::compare_exchange_strong(TaggedPtr& expected,
     TaggedPtr desired, std::memory_order success, std::memory_order failure)
 {
-  typename TaggedPtr::RawType raw_expected = expected.raw_value;
-  return m_raw_value.compare_exchange_strong(raw_expected, desired.raw_value,
-                                             success, failure);
+  return m_raw_value.compare_exchange_strong(expected.raw_value,
+      desired.raw_value, success, failure);
 }
 
 template <typename T>
@@ -408,9 +421,8 @@ AtomicTaggedPtr<T>::compare_exchange_strong(TaggedPtr& expected,
     TaggedPtr desired, std::memory_order success, std::memory_order failure)
     volatile
 {
-  typename TaggedPtr::RawType raw_expected = expected.raw_value;
-  return m_raw_value.compare_exchange_strong(raw_expected, desired.raw_value,
-                                             success, failure);
+  return m_raw_value.compare_exchange_strong(expected.raw_value,
+      desired.raw_value, success, failure);
 }
 
 template <typename T>
@@ -418,9 +430,8 @@ bool
 AtomicTaggedPtr<T>::compare_exchange_strong(TaggedPtr& expected,
     TaggedPtr desired, std::memory_order order)
 {
-  typename TaggedPtr::RawType raw_expected = expected.raw_value;
-  return m_raw_value.compare_exchange_strong(raw_expected, desired.raw_value,
-                                             order);
+  return m_raw_value.compare_exchange_strong(expected.raw_value,
+      desired.raw_value, order);
 }
 
 template <typename T>
@@ -428,9 +439,8 @@ bool
 AtomicTaggedPtr<T>::compare_exchange_strong(TaggedPtr& expected,
     TaggedPtr desired, std::memory_order order) volatile
 {
-  typename TaggedPtr::RawType raw_expected = expected.raw_value;
-  return m_raw_value.compare_exchange_strong(raw_expected, desired.raw_value,
-                                             order);
+  return m_raw_value.compare_exchange_strong(expected.raw_value,
+      desired.raw_value, order);
 }
 
 template <typename T>
@@ -438,6 +448,13 @@ bool
 AtomicTaggedPtr<T>::operator==(TaggedPtr other) const noexcept
 {
   return load() == other;
+}
+
+template <typename T>
+bool
+AtomicTaggedPtr<T>::operator!=(TaggedPtr other) const noexcept
+{
+  return !(*this == other);
 }
 
 } // namespace ni
