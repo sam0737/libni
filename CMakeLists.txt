@@ -95,8 +95,10 @@ configure_file(
 # for QtCreator
 file(GLOB_RECURSE headers
   ${CMAKE_SOURCE_DIR}/include/*.hh
+  ${CMAKE_BINARY_DIR}/include/*.h
   ${CMAKE_BINARY_DIR}/include/*.hh
   ${deps}/*.hh
+  ${deps}/*.hpp
 )
 
 # Include/link directories
