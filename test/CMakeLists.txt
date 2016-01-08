@@ -53,6 +53,7 @@ function(add_tests)
 endfunction(add_tests)
 
 add_subdirectory(cds)
+add_subdirectory(hash)
 
 add_tests(
   logging
