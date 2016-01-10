@@ -21,6 +21,4 @@
 
 #include <cstddef>
 
-constexpr size_t NI_CACHELINE_SIZE = ${CACHELINE_SIZE};
-
 #define NI_LOG_FILE_PATH_IDX ${LOG_FILE_PATH_IDX}

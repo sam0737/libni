@@ -143,8 +143,8 @@ SPSCRingBuffer<T, Empty, Fill>::SPSCRingBuffer(size_t size)
   assert((size > 1) && (size & (size - 1)) == 0 &&
          "size must be a power of two");
 
-  int rc = posix_memalign(reinterpret_cast<void**>(&m_buf), NI_CACHELINE_SIZE,
-                          sizeof(T) * size);
+  int rc = posix_memalign(reinterpret_cast<void**>(&m_buf),
+                          NI_CACHELINE_SIZE<size_t>, sizeof(T) * size);
   if (rc)
     throw std::system_error(rc, std::system_category(), __func__);
 

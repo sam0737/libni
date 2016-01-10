@@ -27,7 +27,7 @@ template <typename T, T Empty = T(), typename Fill = T>
 class SPSCLinkedList
 {
 public:
-  explicit SPSCLinkedList(size_t cache_size = NI_CACHELINE_SIZE,
+  explicit SPSCLinkedList(size_t cache_size = NI_CACHELINE_SIZE<size_t>,
                           bool fill_cache = false);
   ~SPSCLinkedList();
   void push(const T& element);

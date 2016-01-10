@@ -65,24 +65,6 @@ macro(add_backward target)
 endmacro()
 
 # config.hh
-if (NOT DEFINED CACHELINE_SIZE)
-  find_program(getconf getconf)
-  mark_as_advanced(getconf)
-
-  if(getconf)
-    execute_process(
-      COMMAND ${getconf} LEVEL1_DCACHE_LINESIZE
-      OUTPUT_VARIABLE L1_DCACHE_LINESIZE
-    )
-  endif()
-
-  if(${L1_DCACHE_LINESIZE} AND NOT ${L1_DCACHE_LINESIZE} STREQUAL "undefined\n")
-    string(STRIP ${L1_DCACHE_LINESIZE} CACHELINE_SIZE)
-  else()
-    set(CACHELINE_SIZE 64)
-  endif()
-endif()
-
 if (NOT DEFINED LOG_FILE_PATH_IDX)
   set(LOG_FILE_PATH_IDX 0)
 endif()
@@ -94,6 +76,7 @@ configure_file(
 
 # for QtCreator
 file(GLOB_RECURSE headers
+  ${CMAKE_SOURCE_DIR}/include/*.h
   ${CMAKE_SOURCE_DIR}/include/*.hh
   ${CMAKE_BINARY_DIR}/include/*.h
   ${CMAKE_BINARY_DIR}/include/*.hh

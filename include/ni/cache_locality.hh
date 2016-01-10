@@ -18,13 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #pragma once
-#include <ni/config.hh>
 
-#define NI_CACHELINE_ALIGNED alignas(NI_CACHELINE_SIZE)
+template <typename T>
+constexpr T NI_CACHELINE_SIZE = T(64);
+
+#define NI_CACHELINE_ALIGNED alignas(NI_CACHELINE_SIZE<size_t>)
 
 #define NI_CONCAT(x, y) x##y
 #define NI_INDIRECTLY_CONCAT(x, y) NI_CONCAT(x, y)
 #define NI_NEW_VAR(prefix) NI_INDIRECTLY_CONCAT(prefix, __COUNTER__)
 
-#define NI_PADDING_AFTER(size) char NI_NEW_VAR(padding_)\
-  [NI_CACHELINE_SIZE - (size) % NI_CACHELINE_SIZE]
+#define NI_PADDING_AFTER(size)                                                 \
+  char NI_NEW_VAR(                                                             \
+    padding_)[NI_CACHELINE_SIZE<size_t> - (size) % NI_CACHELINE_SIZE<size_t>]
