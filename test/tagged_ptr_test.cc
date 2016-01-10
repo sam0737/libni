@@ -1,7 +1,3 @@
-#include <cassert>
-#include <cstdint>
-#include <cstdlib>
-
 #include <ni/mpl/unit.hh>
 #include <ni/tagged_ptr.hh>
 #include <catch.hpp>
@@ -26,7 +22,7 @@ TEST_CASE("DoubleTagPtr")
   };
   using Ptr = DoubleTagPtr<Type, int>;
 
-  Type tmp { 7 };
+  Type tmp{7};
 
   REQUIRE(Ptr(&tmp, 42, 3).value() == &tmp);
   REQUIRE(Ptr(&tmp, 42, 3).tag1() == 42);

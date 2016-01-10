@@ -41,23 +41,20 @@ Logger::~Logger()
   flush();
 }
 
-void
-Logger::connect(MessageBus& msg_bus)
+void Logger::connect(MessageBus& msg_bus)
 {
   m_output = &msg_bus;
 }
 
-void
-Logger::add_sink(std::unique_ptr<Sink>&& sink)
+void Logger::add_sink(std::unique_ptr<Sink>&& sink)
 {
   m_sinks.emplace_back(std::move(sink));
 }
 
-void
-Logger::log(std::unique_ptr<LogMessage>&& message) noexcept
+void Logger::log(std::unique_ptr<LogMessage>&& message) noexcept
 {
   thread_local static MessageBus::Channel* channel =
-      m_output->get_input_channel();
+    m_output->get_input_channel();
   std::unique_ptr<LogMessage> msg = std::move(message);
   assert(msg);
 
@@ -75,22 +72,19 @@ Logger::log(std::unique_ptr<LogMessage>&& message) noexcept
   }
 }
 
-void
-Logger::save(LogMessage* message)
+void Logger::save(LogMessage* message)
 {
   assert(message);
-  for (auto& sink: m_sinks)
+  for (auto& sink : m_sinks)
   {
     assert(sink.get());
     sink->write(message);
   }
 }
 
-
-void
-Logger::flush()
+void Logger::flush()
 {
-  for (auto& sink: m_sinks)
+  for (auto& sink : m_sinks)
   {
     sink->flush();
   }

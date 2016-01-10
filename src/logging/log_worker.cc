@@ -42,30 +42,27 @@ LogWorker::~LogWorker()
   stop();
 }
 
-void
-LogWorker::start(pthread_attr_t* attrs)
+void LogWorker::start(pthread_attr_t* attrs)
 {
   assert(!m_thread);
   pthread_create(&m_thread, attrs, LogWorker::start_thread, this);
   pthread_setname_np(m_thread, "LogWorker");
 }
 
-
-void*
-LogWorker::start_thread(void* args)
+void* LogWorker::start_thread(void* args)
 {
   static_cast<LogWorker*>(args)->run();
   return nullptr;
 }
 
-void
-LogWorker::run()
+void LogWorker::run()
 {
   size_t spins = 0;
   std::vector<Logger*> loggers;
   std::unique_ptr<LogMessage> msg;
-  auto flush_loggers = [&] {
-    for (Logger* logger: loggers)
+  auto flush_loggers = [&]
+  {
+    for (Logger* logger : loggers)
       logger->flush();
   };
 
@@ -115,8 +112,7 @@ LogWorker::run()
   }
 }
 
-void
-LogWorker::stop()
+void LogWorker::stop()
 {
   if (!m_thread)
     return;

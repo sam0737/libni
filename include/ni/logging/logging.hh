@@ -27,50 +27,50 @@
 
 #define NI_ERR_NAME(ERRNO) ni::logging::ERRNO_NAMES[ERRNO]
 
-#define NI_ERROR(FMT, ...) \
-  do \
-  { \
-    fflush(stdout); \
-    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT "\n", \
-                   NI_FILE_PATH, __LINE__, ##__VA_ARGS__); \
+#define NI_ERROR(FMT, ...)                                                     \
+  do                                                                           \
+  {                                                                            \
+    fflush(stdout);                                                            \
+    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT "\n",           \
+                   NI_FILE_PATH, __LINE__, ##__VA_ARGS__);                     \
   } while (0)
 
-#define NI_PERROR(FMT, ...) \
-  do \
-  { \
-    fflush(stdout); \
-    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT ": %s\n", \
+#define NI_PERROR(FMT, ...)                                                    \
+  do                                                                           \
+  {                                                                            \
+    fflush(stdout);                                                            \
+    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT ": %s\n",       \
                    NI_FILE_PATH, __LINE__, ##__VA_ARGS__, NI_ERR_NAME(errno)); \
   } while (0)
 
-#define NI_PERROR_EN(FMT, ERRNO, ...) \
-  do \
-  { \
-    fflush(stdout); \
-    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT ": %s\n", \
+#define NI_PERROR_EN(FMT, ERRNO, ...)                                          \
+  do                                                                           \
+  {                                                                            \
+    fflush(stdout);                                                            \
+    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT ": %s\n",       \
                    NI_FILE_PATH, __LINE__, ##__VA_ARGS__, NI_ERR_NAME(errno)); \
   } while (0)
 
-#define NI_FATAL(ACTION, FMT, ...) \
-  do \
-  { \
-    ACTION(FMT, ##__VA_ARGS__); \
-    exit(EXIT_FAILURE); \
+#define NI_FATAL(ACTION, FMT, ...)                                             \
+  do                                                                           \
+  {                                                                            \
+    ACTION(FMT, ##__VA_ARGS__);                                                \
+    exit(EXIT_FAILURE);                                                        \
   } while (0)
 
 #if !defined(LOG_LEVEL) || !defined(LOGF_LEVEL)
-  #include <ni/logging/capture.hh>
+#include <ni/logging/capture.hh>
 
-  #ifndef LOG_LEVEL
-  #define LOG_LEVEL(LOGGER, LEVEL) \
-    ni::logging::Capture(LOGGER, ni::logging::LogSeverity::LEVEL, NI_FILE_PATH,\
-                         __LINE__)
-  #endif // !defined(LOG_LEVEL)
+#ifndef LOG_LEVEL
+#define LOG_LEVEL(LOGGER, LEVEL)                                               \
+  ni::logging::Capture(LOGGER, ni::logging::LogSeverity::LEVEL, NI_FILE_PATH,  \
+                       __LINE__)
+#endif // !defined(LOG_LEVEL)
 
-  #ifndef LOGF_LEVEL
-  #define LOGF_LEVEL(LOGGER, LEVEL, FMT, ...) \
-    LOG_LEVEL(LOGGER, LEVEL).log(FMT, ##__VA_ARGS__)
-  #endif // !defined(LOGF_LEVEL)
+#ifndef LOGF_LEVEL
+#define LOGF_LEVEL(LOGGER, LEVEL, FMT, ...)                                    \
+  LOG_LEVEL(LOGGER, LEVEL).log(FMT, ##__VA_ARGS__)
+#endif // !defined(LOGF_LEVEL)
 
 #endif // !defined(LOG_LEVEL) || !defined(LOGF_LEVEL)
 
@@ -88,21 +88,20 @@
 #define LOGF_ERROR(LOGGER, ...) LOGF_LEVEL(LOGGER, Error, ##__VA_ARGS__)
 #define LOGF_CRITICAL(LOGGER, ...) LOGF_LEVEL(LOGGER, Critical, ##__VA_ARGS__)
 
-#define LOGF_PERROR_EN(LOGGER, FMT, ERRNO, ...) \
+#define LOGF_PERROR_EN(LOGGER, FMT, ERRNO, ...)                                \
   LOGF_ERROR(LOGGER, FMT, ##__VA_ARGS__) << ": " << NI_ERR_NAME(errno)
 
-#define LOGF_PERROR(LOGGER, FMT, ...) \
+#define LOGF_PERROR(LOGGER, FMT, ...)                                          \
   LOGF_PERROR_EN(LOGGER, FMT, errno, ##__VA_ARGS__)
 
-#define LOG_IF(CONDITION, ACTION, ...) \
-  if (CONDITION) \
+#define LOG_IF(CONDITION, ACTION, ...)                                         \
+  if (CONDITION)                                                               \
     ACTION(__VA_ARGS__);
 
 namespace ni
 {
 namespace logging
 {
-
 class LogService;
 
 // Singleton interface

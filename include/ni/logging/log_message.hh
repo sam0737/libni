@@ -37,8 +37,7 @@ public:
   LogMessage(Logger* logger, LogSeverity severity);
 };
 
-inline
-LogMessage::LogMessage(Logger* logger, LogSeverity severity)
+inline LogMessage::LogMessage(Logger* logger, LogSeverity severity)
   : logger(logger)
   , severity(severity)
 {

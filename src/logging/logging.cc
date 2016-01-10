@@ -22,10 +22,8 @@
 
 namespace ni
 {
-
 namespace logging
 {
-
 LogService* service_instance = nullptr;
 
 LogService& init(size_t queue_size)

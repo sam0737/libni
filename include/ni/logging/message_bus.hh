@@ -53,8 +53,7 @@ private:
   void collect_pending_channels();
 };
 
-inline MessageBus::Channels&
-MessageBus::channels()
+inline MessageBus::Channels& MessageBus::channels()
 {
   collect_pending_channels();
   return m_channels;

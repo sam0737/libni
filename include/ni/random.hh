@@ -23,6 +23,4 @@
 namespace ni
 {
 
-
-
 } // namespace ni

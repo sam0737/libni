@@ -39,19 +39,17 @@ LogService::~LogService()
   stop();
 }
 
-bool
-LogService::add_logger(string_view name, std::unique_ptr<Logger>&& logger)
+bool LogService::add_logger(string_view name, std::unique_ptr<Logger>&& logger)
 {
   Logger* tmp = logger.get();
-  auto result = m_loggers.emplace(std::make_pair(name.to_string(),
-                                                 std::move(logger)));
+  auto result =
+    m_loggers.emplace(std::make_pair(name.to_string(), std::move(logger)));
   if (result.second)
     tmp->connect(m_message_bus);
   return result.second;
 }
 
-Logger*
-LogService::get(const std::string& name)
+Logger* LogService::get(const std::string& name)
 {
   auto it = m_loggers.find(name);
   if (it == m_loggers.end())
@@ -59,14 +57,12 @@ LogService::get(const std::string& name)
   return it->second.get();
 }
 
-void
-LogService::start(pthread_attr_t* attrs)
+void LogService::start(pthread_attr_t* attrs)
 {
   m_worker.start(attrs);
 }
 
-void
-LogService::stop()
+void LogService::stop()
 {
   m_worker.stop();
 }

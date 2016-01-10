@@ -28,7 +28,6 @@ namespace ni
 /// **Reference**
 /// * John Lamping and Eric Veach, A Fast, Minimal Memory, Consistent Hash
 /// Algorithm. http://arxiv.org/abs/1406.2294
-int32_t
-jump_consistent_hash(uint64_t key, int32_t num_buckets);
+int32_t jump_consistent_hash(uint64_t key, int32_t num_buckets);
 
 } // namespace ni

@@ -54,7 +54,7 @@ private:
 
 // Raised when `<Logger>* <LogService::get(string_view name)>` is called with an
 // unknown logger name
-class LoggerNotFound: public std::logic_error
+class LoggerNotFound : public std::logic_error
 {
 public:
   explicit LoggerNotFound(string_view logger);

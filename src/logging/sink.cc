@@ -30,8 +30,7 @@ namespace ni
 namespace logging
 {
 
-int
-FileSink::open(int fd)
+int FileSink::open(int fd)
 {
   if (posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED) == -1)
   {
@@ -44,14 +43,13 @@ FileSink::open(int fd)
 
   // Assuming the FILE* is accessed exclusively by the logger thread, internal
   // locking is not needed.
-//  __fsetlocking(m_stream, FSETLOCKING_BYCALLER);
+  //  __fsetlocking(m_stream, FSETLOCKING_BYCALLER);
   return 0;
 }
 
-int
-FileSink::open(string_view filename)
+int FileSink::open(string_view filename)
 {
-  int fd = ::open(filename.data(), O_WRONLY|O_APPEND|O_CREAT, 0644);
+  int fd = ::open(filename.data(), O_WRONLY | O_APPEND | O_CREAT, 0644);
   LOG_IF(fd == -1, NI_FATAL, NI_PERROR, "Failed to open {}", filename.data());
   return open(fd) == -1 ? -1 : fd;
 }
@@ -66,8 +64,7 @@ FileSink::~FileSink()
   }
 }
 
-void
-FileSink::write(LogMessage* msg)
+void FileSink::write(LogMessage* msg)
 {
   assert(m_stream);
   assert(msg);
@@ -75,8 +72,7 @@ FileSink::write(LogMessage* msg)
     fwrite_unlocked(msg->writer.data(), msg->writer.size(), 1, m_stream);
 }
 
-void
-FileSink::flush()
+void FileSink::flush()
 {
   fflush_unlocked(m_stream);
 }

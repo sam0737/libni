@@ -75,9 +75,8 @@ MultiLinearDoubleHash<l, Rng>::MultiLinearDoubleHash(uint64_t seed)
 }
 
 template <size_t l, typename Rng>
-uint32_t
-MultiLinearDoubleHash<l, Rng>::operator()(const void* input, size_t len)
-    const noexcept
+uint32_t MultiLinearDoubleHash<l, Rng>::operator()(const void* input,
+                                                   size_t len) const noexcept
 {
   assert(input);
   assert(len <= MAX_LEN);
@@ -109,20 +108,19 @@ MultiLinearDoubleHash<l, Rng>::operator()(const void* input, size_t len)
 }
 
 template <size_t l, typename Rng>
-uint32_t
-MultiLinearDoubleHash<l, Rng>::operator()(const string_view str) const noexcept
+uint32_t MultiLinearDoubleHash<l, Rng>::operator()(const string_view str) const
+  noexcept
 {
   return this->operator()(str.data(), str.size());
 }
 
 template <size_t l, typename Rng>
-void
-MultiLinearDoubleHash<l, Rng>::fill_random_data(Rng& rng)
+void MultiLinearDoubleHash<l, Rng>::fill_random_data(Rng& rng)
 {
-  std::uniform_int_distribution<uint64_t> uniform_dist(0,
-      std::numeric_limits<uint64_t>::max());
+  std::uniform_int_distribution<uint64_t>
+    uniform_dist(0, std::numeric_limits<uint64_t>::max());
 
-  for (uint64_t& r: m_rand)
+  for (uint64_t& r : m_rand)
     r = uniform_dist(rng);
 }
 

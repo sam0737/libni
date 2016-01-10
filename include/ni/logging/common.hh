@@ -34,9 +34,7 @@ enum class LogSeverity
   Critical
 };
 
-constexpr char LOG_SEVERITY_SHORT_NAMES[] = {
-  'D', 'I', 'N', 'W', 'E', 'C'
-};
+constexpr char LOG_SEVERITY_SHORT_NAMES[] = {'D', 'I', 'N', 'W', 'E', 'C'};
 
 enum class OverflowStrategy
 {

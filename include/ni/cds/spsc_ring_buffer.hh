@@ -31,10 +31,8 @@
 
 namespace ni
 {
-
 namespace details
 {
-
 template <typename T, T Empty, typename Fill, typename Enabled = void>
 struct SPSCRingBufferFiller
 {
@@ -50,9 +48,9 @@ struct SPSCRingBufferFiller<T, Empty, T, T>
 };
 
 template <typename T, T Empty, typename Fill>
-struct SPSCRingBufferFiller<T, Empty, Fill, typename std::enable_if<
-        std::is_integral<typename Fill::value_type>::value
-    >::type>
+struct SPSCRingBufferFiller<
+  T, Empty, Fill, typename std::enable_if<
+                    std::is_integral<typename Fill::value_type>::value>::type>
 {
   static constexpr int value = static_cast<int>(Fill::value);
   using type = int;
@@ -86,8 +84,8 @@ public:
   /// \param size the maximum size of the ring buffer, must be power of two (
   ///        and greater than 1 )
   explicit SPSCRingBuffer(size_t size);
-  SPSCRingBuffer(const SPSCRingBuffer&)=delete;
-  SPSCRingBuffer& operator==(const SPSCRingBuffer&)=delete;
+  SPSCRingBuffer(const SPSCRingBuffer&) = delete;
+  SPSCRingBuffer& operator==(const SPSCRingBuffer&) = delete;
   ~SPSCRingBuffer();
 
   /// \return size of the whole ring buffer
@@ -158,15 +156,13 @@ SPSCRingBuffer<T, Empty, Fill>::~SPSCRingBuffer()
 }
 
 template <typename T, T Empty, typename Fill>
-size_t
-SPSCRingBuffer<T, Empty, Fill>::size() const
+size_t SPSCRingBuffer<T, Empty, Fill>::size() const
 {
   return m_size;
 }
 
 template <typename T, T Empty, typename Fill>
-size_t
-SPSCRingBuffer<T, Empty, Fill>::len() const
+size_t SPSCRingBuffer<T, Empty, Fill>::len() const
 {
   size_t w = m_write_index;
   size_t r = m_read_index;
@@ -180,22 +176,19 @@ SPSCRingBuffer<T, Empty, Fill>::len() const
 }
 
 template <typename T, T Empty, typename Fill>
-bool
-SPSCRingBuffer<T, Empty, Fill>::empty() const
+bool SPSCRingBuffer<T, Empty, Fill>::empty() const
 {
   return m_buf[m_read_index].load(std::memory_order_acquire) == Empty;
 }
 
 template <typename T, T Empty, typename Fill>
-bool
-SPSCRingBuffer<T, Empty, Fill>::available() const
+bool SPSCRingBuffer<T, Empty, Fill>::available() const
 {
   return m_buf[m_write_index].load(std::memory_order_acquire) == Empty;
 }
 
 template <typename T, T Empty, typename Fill>
-bool
-SPSCRingBuffer<T, Empty, Fill>::push(const T& element)
+bool SPSCRingBuffer<T, Empty, Fill>::push(const T& element)
 {
   if (!available())
     return false;
@@ -206,8 +199,7 @@ SPSCRingBuffer<T, Empty, Fill>::push(const T& element)
 }
 
 template <typename T, T Empty, typename Fill>
-T
-SPSCRingBuffer<T, Empty, Fill>::pop()
+T SPSCRingBuffer<T, Empty, Fill>::pop()
 {
   T element = m_buf[m_read_index].load(std::memory_order_acquire);
   if (element == Empty)
@@ -219,33 +211,31 @@ SPSCRingBuffer<T, Empty, Fill>::pop()
 }
 
 template <typename T, T Empty, typename Fill>
-T
-SPSCRingBuffer<T, Empty, Fill>::top() const
+T SPSCRingBuffer<T, Empty, Fill>::top() const
 {
   return m_buf[m_read_index].load(std::memory_order_acquire);
 }
 
 template <typename T, T Empty, typename Fill>
-void
-SPSCRingBuffer<T, Empty, Fill>::reset()
+void SPSCRingBuffer<T, Empty, Fill>::reset()
 {
   m_read_index = m_write_index = 0;
   clear(Filler::value);
 }
 
 template <typename T, T Empty, typename Fill>
-void
-SPSCRingBuffer<T, Empty, Fill>::clear(Unit, bool initialized)
+void SPSCRingBuffer<T, Empty, Fill>::clear(Unit, bool initialized)
 {
   if (!initialized)
-    new (m_buf) std::atomic<T>[m_size]{};
+    new (m_buf) std::atomic<T>[m_size]
+    {
+    };
   for (size_t i = 0; i < m_size; ++i)
     m_buf[i].store(Empty, std::memory_order_release);
 }
 
 template <typename T, T Empty, typename Fill>
-void
-SPSCRingBuffer<T, Empty, Fill>::clear(int value, bool)
+void SPSCRingBuffer<T, Empty, Fill>::clear(int value, bool)
 {
   memset(m_buf, value, sizeof(T) * m_size);
 }
@@ -253,6 +243,6 @@ SPSCRingBuffer<T, Empty, Fill>::clear(int value, bool)
 /// \brief Convenient template alias for pointers
 template <typename T>
 using SPSCPtrRingBuffer =
-SPSCRingBuffer<T*, nullptr, std::integral_constant<int, 0>>;
+  SPSCRingBuffer<T*, nullptr, std::integral_constant<int, 0>>;
 
 } // namespace ni

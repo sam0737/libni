@@ -13,25 +13,26 @@ TEST_CASE("MSQueue-FIFO")
   std::vector<std::thread> threads;
 
   threads.emplace_back([&]
-  {
-    for (int i = 0; i < 1000; ++i)
-    {
-      queue.push(i);
-    }
-  });
+                       {
+                         for (int i = 0; i < 1000; ++i)
+                         {
+                           queue.push(i);
+                         }
+                       });
 
-  threads.emplace_back([&]
-  {
-    for (int i = 0; i < 1000; ++i)
+  threads.emplace_back(
+    [&]
     {
-      int value;
-      while (!queue.pop(&value))
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      REQUIRE(value == i);
-    }
-  });
+      for (int i = 0; i < 1000; ++i)
+      {
+        int value;
+        while (!queue.pop(&value))
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        REQUIRE(value == i);
+      }
+    });
 
-  for (auto& t: threads)
+  for (auto& t : threads)
     t.join();
 
   REQUIRE(queue.empty());
@@ -47,31 +48,33 @@ TEST_CASE("MSQueue-ABACounter")
 
   for (int i = 0; i < 3; ++i)
   {
-    threads.emplace_back([&]
-    {
-      for (int i = 0; i < 333; ++i)
+    threads.emplace_back(
+      [&]
       {
-        queue.push(in.fetch_add(1, std::memory_order_relaxed));
-      }
-    });
+        for (int i = 0; i < 333; ++i)
+        {
+          queue.push(in.fetch_add(1, std::memory_order_relaxed));
+        }
+      });
   }
 
-  threads.emplace_back([&]
-  {
-    int sum = 0;
-    for (int i = 0; i < 999; ++i)
+  threads.emplace_back(
+    [&]
     {
-      int value;
-      uint16_t state;
-      while (!queue.pop(&value, &state))
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-      sum += value;
-      REQUIRE(state == i);
-    }
-    REQUIRE(sum == (0 + 998) * 999 / 2);
-  });
+      int sum = 0;
+      for (int i = 0; i < 999; ++i)
+      {
+        int value;
+        uint16_t state;
+        while (!queue.pop(&value, &state))
+          std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        sum += value;
+        REQUIRE(state == i);
+      }
+      REQUIRE(sum == (0 + 998) * 999 / 2);
+    });
 
-  for (auto& t: threads)
+  for (auto& t : threads)
     t.join();
 
   REQUIRE(queue.empty());

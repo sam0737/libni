@@ -22,6 +22,8 @@
 namespace ni
 {
 
-struct Unit {};
+struct Unit
+{
+};
 
 } // namespace ni

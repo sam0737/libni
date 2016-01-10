@@ -35,7 +35,7 @@ class Sink
 {
 public:
   explicit Sink(LogSeverity level) noexcept;
-  virtual ~Sink() {};
+  virtual ~Sink(){};
   virtual void write(LogMessage* msg) = 0;
   virtual void flush() = 0;
 
@@ -45,21 +45,18 @@ protected:
   bool should_accept(LogMessage* msg) const noexcept;
 };
 
-inline
-Sink::Sink(LogSeverity level) noexcept
-  : m_level(level)
+inline Sink::Sink(LogSeverity level) noexcept : m_level(level)
 {
 }
 
-inline bool
-Sink::should_accept(LogMessage* msg) const noexcept
+inline bool Sink::should_accept(LogMessage* msg) const noexcept
 {
   assert(msg);
   return msg->severity >= m_level;
 }
 
 // A simple sink for files (which should not be accessed outside of this class)
-class FileSink: public Sink
+class FileSink : public Sink
 {
 public:
   FileSink(LogSeverity level);
@@ -77,8 +74,7 @@ private:
   FILE* m_stream;
 };
 
-inline
-FileSink::FileSink(LogSeverity level)
+inline FileSink::FileSink(LogSeverity level)
   : Sink(level)
   , m_stream()
 {

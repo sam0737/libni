@@ -27,8 +27,10 @@ template <typename T, T Empty = T(), typename Fill = T>
 class SPSCBufferList
 {
   using Buffer = SPSCRingBuffer<T, Empty, Fill>;
+
 public:
-  SPSCBufferList(size_t buffer_size, size_t cache_size, bool fill_cache = false);
+  SPSCBufferList(size_t buffer_size, size_t cache_size,
+                 bool fill_cache = false);
   ~SPSCBufferList();
 
   bool empty() const;
@@ -81,15 +83,13 @@ SPSCBufferList<T, Empty, Fill>::~SPSCBufferList()
 }
 
 template <typename T, T Empty, typename Fill>
-bool
-SPSCBufferList<T, Empty, Fill>::empty() const
+bool SPSCBufferList<T, Empty, Fill>::empty() const
 {
   return m_buf_to_read->empty() && m_buf_to_read == m_buf_to_write;
 }
 
 template <typename T, T Empty, typename Fill>
-void
-SPSCBufferList<T, Empty, Fill>::push(const T& element)
+void SPSCBufferList<T, Empty, Fill>::push(const T& element)
 {
   if (!m_buf_to_write->available())
     m_buf_to_write = next_to_write(m_buf_size);
@@ -98,8 +98,7 @@ SPSCBufferList<T, Empty, Fill>::push(const T& element)
 }
 
 template <typename T, T Empty, typename Fill>
-T
-SPSCBufferList<T, Empty, Fill>::pop()
+T SPSCBufferList<T, Empty, Fill>::pop()
 {
   if (m_buf_to_read->empty())
   {
@@ -139,8 +138,7 @@ SPSCBufferList<T, Empty, Fill>::next_to_write(const size_t buf_size)
 }
 
 template <typename T, T Empty, typename Fill>
-void
-SPSCBufferList<T, Empty, Fill>::release(Buffer* buf)
+void SPSCBufferList<T, Empty, Fill>::release(Buffer* buf)
 {
   buf->reset();
   if (!m_cache.push(buf))
@@ -148,8 +146,7 @@ SPSCBufferList<T, Empty, Fill>::release(Buffer* buf)
 }
 
 template <typename T, T Empty, typename Fill>
-void
-SPSCBufferList<T, Empty, Fill>::reset()
+void SPSCBufferList<T, Empty, Fill>::reset()
 {
   Buffer* buf;
   while ((buf = m_in_use.pop()))

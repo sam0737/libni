@@ -112,8 +112,7 @@ SPSCLinkedList<T, Empty, Fill>::~SPSCLinkedList()
 }
 
 template <typename T, T Empty, typename Fill>
-void
-SPSCLinkedList<T, Empty, Fill>::push(const T& element)
+void SPSCLinkedList<T, Empty, Fill>::push(const T& element)
 {
   Node* n = m_cache.pop();
   if (!n)
@@ -124,8 +123,7 @@ SPSCLinkedList<T, Empty, Fill>::push(const T& element)
 }
 
 template <typename T, T Empty, typename Fill>
-T
-SPSCLinkedList<T, Empty, Fill>::pop()
+T SPSCLinkedList<T, Empty, Fill>::pop()
 {
   Node* next = m_head->next.load(std::memory_order_acquire);
   if (!next)

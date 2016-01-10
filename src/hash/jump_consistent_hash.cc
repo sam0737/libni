@@ -22,8 +22,7 @@
 namespace ni
 {
 
-int32_t
-jump_consistent_hash(uint64_t key, int32_t num_buckets)
+int32_t jump_consistent_hash(uint64_t key, int32_t num_buckets)
 {
   int64_t b = 1, j = 0;
   while (j < num_buckets)

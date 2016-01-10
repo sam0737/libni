@@ -62,8 +62,7 @@ private:
   std::vector<std::unique_ptr<Sink>> m_sinks;
 };
 
-inline LogSeverity
-Logger::level() const noexcept
+inline LogSeverity Logger::level() const noexcept
 {
   return m_level;
 }

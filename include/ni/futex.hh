@@ -46,34 +46,30 @@ struct Futex : public std::atomic<int32_t>
   int wake(int count = INT_MAX, int wake_mask = -1) noexcept;
 };
 
-inline
-Futex::Futex(int32_t value) noexcept
-  : std::atomic<int32_t>(value)
+inline Futex::Futex(int32_t value) noexcept : std::atomic<int32_t>(value)
 {
 }
 
-inline bool
-Futex::wait(int32_t expected, int wait_mask) noexcept
+inline bool Futex::wait(int32_t expected, int wait_mask) noexcept
 {
-  int rv = syscall(SYS_futex, this,           // addr1
+  int rv = syscall(SYS_futex, this, // addr1
                    FUTEX_WAIT_BITSET_PRIVATE, // op
-                   expected,                  // val
-                   nullptr,                   // timeout
-                   nullptr,                   // addr2
-                   wait_mask);                // val3
+                   expected, // val
+                   nullptr, // timeout
+                   nullptr, // addr2
+                   wait_mask); // val3
   return (rv == 0 || errno == EWOULDBLOCK);
 }
 
-inline int
-Futex::wake(int count, int wake_mask) noexcept
+inline int Futex::wake(int count, int wake_mask) noexcept
 {
   assert(count > 0);
-  int rv = syscall(SYS_futex, this,           // addr1
+  int rv = syscall(SYS_futex, this, // addr1
                    FUTEX_WAKE_BITSET_PRIVATE, // op
-                   count,                     // val
-                   nullptr,                   // timeout
-                   nullptr,                   // addr2
-                   wake_mask);                // val3
+                   count, // val
+                   nullptr, // timeout
+                   nullptr, // addr2
+                   wake_mask); // val3
   return rv;
 }
 

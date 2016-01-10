@@ -27,16 +27,16 @@ namespace ni
 namespace logging
 {
 
-#define FOR_ALL_INPUT_OVERLOAD_TYPES(X) \
-  X(int) \
-  X(unsigned) \
-  X(long) \
-  X(unsigned long) \
-  X(long long) \
-  X(unsigned long long) \
-  X(double) \
-  X(long double) \
-  X(char) \
+#define FOR_ALL_INPUT_OVERLOAD_TYPES(X)                                        \
+  X(int)                                                                       \
+  X(unsigned)                                                                  \
+  X(long)                                                                      \
+  X(unsigned long)                                                             \
+  X(long long)                                                                 \
+  X(unsigned long long)                                                        \
+  X(double)                                                                    \
+  X(long double)                                                               \
+  X(char)                                                                      \
   X(ni::fmt::StringRef)
 
 class Capture
@@ -67,9 +67,8 @@ private:
   std::unique_ptr<LogMessage> m_message;
 };
 
-inline
-Capture::Capture(Logger* logger, LogSeverity severity, const char* file,
-                 int line)
+inline Capture::Capture(Logger* logger, LogSeverity severity, const char* file,
+                        int line)
   : m_logger(logger)
   , m_enabled(severity >= logger->level())
   , m_message(m_enabled ? new LogMessage(logger, severity) : nullptr)
@@ -96,8 +95,7 @@ Capture::Capture(Logger* logger, LogSeverity severity, const char* file,
                     << " [" << file << ':' << line << "] ";
 }
 
-inline
-Capture::~Capture()
+inline Capture::~Capture()
 {
   if (m_enabled)
   {
@@ -107,21 +105,19 @@ Capture::~Capture()
 }
 
 template <typename... Args>
-inline void
-Capture::log(ni::fmt::CStringRef fmt, Args&&... args)
+inline void Capture::log(ni::fmt::CStringRef fmt, Args&&... args)
 {
   if (m_enabled)
     m_message->writer.write(fmt, std::forward<Args>(args)...);
 }
 
-#define DEFINE_INPUT_OP_OVERLOAD(TYPE) \
-   \
-  inline Capture& \
-  Capture::operator<<(TYPE value) \
-  { \
-    if (m_enabled) \
-      m_message->writer << value; \
-    return *this; \
+#define DEFINE_INPUT_OP_OVERLOAD(TYPE)                                         \
+                                                                               \
+  inline Capture& Capture::operator<<(TYPE value)                              \
+  {                                                                            \
+    if (m_enabled)                                                             \
+      m_message->writer << value;                                              \
+    return *this;                                                              \
   }
 
 FOR_ALL_INPUT_OVERLOAD_TYPES(DEFINE_INPUT_OP_OVERLOAD)
@@ -131,8 +127,8 @@ FOR_ALL_INPUT_OVERLOAD_TYPES(DEFINE_INPUT_OP_OVERLOAD)
 #undef FOR_ALL_INPUT_OVERLOAD_TYPES
 
 template <typename T, typename Spec, typename FillChar>
-inline Capture&
-Capture::operator<<(ni::fmt::IntFormatSpec<T, Spec, FillChar> spec)
+inline Capture& Capture::operator<<(
+  ni::fmt::IntFormatSpec<T, Spec, FillChar> spec)
 {
   if (m_enabled)
     m_message->writer << spec;
@@ -140,8 +136,7 @@ Capture::operator<<(ni::fmt::IntFormatSpec<T, Spec, FillChar> spec)
 }
 
 template <typename StrChar>
-inline Capture&
-Capture::operator<<(const ni::fmt::StrFormatSpec<StrChar>& spec)
+inline Capture& Capture::operator<<(const ni::fmt::StrFormatSpec<StrChar>& spec)
 {
   if (m_enabled)
     m_message->writer << spec;
@@ -149,8 +144,7 @@ Capture::operator<<(const ni::fmt::StrFormatSpec<StrChar>& spec)
 }
 
 template <typename T>
-inline Capture&
-Capture::operator<<(T&& value)
+inline Capture& Capture::operator<<(T&& value)
 {
   if (m_enabled)
     m_message->writer.write("{}", std::forward<T>(value));
