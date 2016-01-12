@@ -21,4 +21,4 @@
 
 #include <cstddef>
 
-#define NI_LOG_FILE_PATH_IDX ${LOG_FILE_PATH_IDX}
+#define NI_FILE_PATH &__FILE__[${LOG_FILE_PATH_IDX}]

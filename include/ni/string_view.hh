@@ -20,9 +20,6 @@
 #pragma once
 #include <experimental/string_view>
 
-#define ni_likely(x) __builtin_expect (!!(x), 1)
-#define ni_unlikely(x) __builtin_expect (!!(x), 0)
-
 namespace ni
 {
 

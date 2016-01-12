@@ -19,5 +19,5 @@
 // THE SOFTWARE.
 #pragma once
 
-#define ni_likely(x) __builtin_expect (!!(x), 1)
-#define ni_unlikely(x) __builtin_expect (!!(x), 0)
+#define NI_LIKELY(x) __builtin_expect(!!(x), 1)
+#define NI_UNLIKELY(x) __builtin_expect(!!(x), 0)

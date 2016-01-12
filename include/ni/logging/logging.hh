@@ -23,8 +23,6 @@
 #include <ni/logging/common.hh>
 #include <ni/string_view.hh>
 
-#define NI_FILE_PATH &__FILE__[NI_LOG_FILE_PATH_IDX]
-
 #define NI_ERR_NAME(ERRNO) ni::logging::ERRNO_NAMES[ERRNO]
 
 #define NI_ERROR(FMT, ...)                                                     \
