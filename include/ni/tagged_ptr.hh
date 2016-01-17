@@ -37,11 +37,14 @@ public:
 
   TaggedPtr() noexcept;
   explicit TaggedPtr(RawType raw) noexcept;
-  explicit TaggedPtr(Value value) noexcept;
+  TaggedPtr(Value value) noexcept;
   TaggedPtr(Value value, Tag tag) noexcept;
 
   Value value() const noexcept;
   Tag tag() const noexcept;
+  void set_value(Value value) noexcept;
+  void set_tag(Tag tag) noexcept;
+  void clear_tag() noexcept;
 
   bool operator==(TaggedPtr other) const noexcept;
   bool operator!=(TaggedPtr other) const noexcept;
@@ -49,6 +52,7 @@ public:
 private:
   static constexpr size_t VALUE_BITS = 48;
   static constexpr size_t VALUE_MASK = (1ULL << VALUE_BITS) - 1;
+  static constexpr size_t TAG_MASK = ~VALUE_MASK;
 };
 
 template <typename T>
@@ -89,6 +93,25 @@ typename TaggedPtr<T>::Tag TaggedPtr<T>::tag() const noexcept
 }
 
 template <typename T>
+void TaggedPtr<T>::set_value(Value value) noexcept
+{
+  raw_value = reinterpret_cast<RawType>(value) | (raw_value & TAG_MASK);
+}
+
+template <typename T>
+void TaggedPtr<T>::set_tag(Tag tag) noexcept
+{
+  raw_value =
+    (raw_value & VALUE_MASK) | (static_cast<RawType>(tag) << VALUE_BITS);
+}
+
+template <typename T>
+void TaggedPtr<T>::clear_tag() noexcept
+{
+  raw_value &= VALUE_MASK;
+}
+
+template <typename T>
 bool TaggedPtr<T>::operator==(TaggedPtr other) const noexcept
 {
   return raw_value == other.raw_value;
@@ -115,7 +138,7 @@ public:
 
   DoubleTagPtr() noexcept;
   explicit DoubleTagPtr(RawType raw) noexcept;
-  explicit DoubleTagPtr(Value value) noexcept;
+  DoubleTagPtr(Value value) noexcept;
   DoubleTagPtr(Value value, Tag1 tag1, Tag2 tag2) noexcept;
 
   Value value() const noexcept;
@@ -209,7 +232,7 @@ public:
   using TaggedPtr = T;
 
   AtomicTaggedPtr();
-  constexpr explicit AtomicTaggedPtr(TaggedPtr tagged_ptr);
+  constexpr AtomicTaggedPtr(TaggedPtr tagged_ptr);
 
   TaggedPtr operator=(TaggedPtr tagged_ptr);
   TaggedPtr operator=(TaggedPtr tagged_ptr) volatile;

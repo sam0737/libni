@@ -21,6 +21,7 @@
 #include <utility>
 
 #include <ni/cache_locality.hh>
+#include <ni/cds/queue.hh>
 #include <ni/tagged_ptr.hh>
 
 namespace ni
@@ -35,14 +36,15 @@ namespace ni
 /// **Reference**
 ///
 /// * M. M. Michael and M. L. Scott. Simple, Fast, and Practical Non-blocking
-/// and Blocking Concurrent Queue Algorithms. PODC '96.
+///   and Blocking Concurrent Queue Algorithms. PODC '96.
 ///
 /// \param T type of the elements
 template <typename T>
-class MSQueue
+class MSQueue : public Queue<MSQueue, T>
 {
 public:
   using Element = T;
+  using State = uint16_t;
 
   class Node
   {
@@ -79,7 +81,7 @@ public:
   ///
   /// \param element Element to push
   template <typename U>
-  void push(U&& element);
+  bool push(U&& element);
 
   /// \brief Try to push a new element into the queue
   ///
@@ -87,24 +89,26 @@ public:
   ///
   /// \return true on success
   template <typename U>
-  bool try_push(U&& element, uint16_t old_tail_tag);
+  bool try_push(U&& element, State old_tail_state);
+
+  State tail_state() const noexcept;
 
   /// \brief Pop an element from the queue
   ///
   /// \param [out] element Location to store the popped element (if the queue
   ///                      is not empty)
-  /// \param [out] state Location to store the state of the queue if `state` is
-  ///                    not null.
+  /// \param [out] head_state Location to store the state of the queue if
+  ///                         `state` is not null.
   ///
   /// \return false if the queue is empty
-  bool pop(T* element, uint16_t* state = nullptr);
+  bool pop(T* element, State* head_state = nullptr);
 
   /// \brief Try to pop an element from the queue
   ///
   /// \param [out] state Location to store the state of the queue
   ///
   /// \return See `PopResult`
-  PopResult try_pop(T* element, uint16_t old_head_tag, uint16_t* state);
+  PopResult try_pop(T* element, State old_head_state, State* head_state);
 
 private:
   using NodePtr = typename Node::Ptr;
@@ -170,7 +174,7 @@ bool MSQueue<T>::empty() const noexcept
 
 template <typename T>
 template <typename U>
-void MSQueue<T>::push(U&& element)
+bool MSQueue<T>::push(U&& element)
 {
   Node* node = new Node(std::forward<U>(element));
   NodePtr old_tail = m_tail.load(std::memory_order_relaxed);
@@ -194,7 +198,7 @@ void MSQueue<T>::push(U&& element)
         m_tail.compare_exchange_weak(old_tail,
                                      NodePtr(node, old_tail.tag() + 1),
                                      std::memory_order_release);
-        return;
+        break;
       }
       old_tail = m_tail.load(std::memory_order_relaxed);
     }
@@ -205,14 +209,16 @@ void MSQueue<T>::push(U&& element)
                                    std::memory_order_release);
     }
   }
+
+  return true;
 }
 
 template <typename T>
 template <typename U>
-bool MSQueue<T>::try_push(U&& element, uint16_t old_tail_tag)
+bool MSQueue<T>::try_push(U&& element, State old_tail_state)
 {
   NodePtr old_tail = m_tail.load(std::memory_order_relaxed);
-  if (old_tail.tag() == old_tail_tag)
+  if (old_tail.tag() == old_tail_state)
   {
     NodePtr next = old_tail.value()->next.load(std::memory_order_relaxed);
     if (next.value() == nullptr)
@@ -239,7 +245,13 @@ bool MSQueue<T>::try_push(U&& element, uint16_t old_tail_tag)
 }
 
 template <typename T>
-bool MSQueue<T>::pop(T* element, uint16_t* state)
+typename MSQueue<T>::State MSQueue<T>::tail_state() const noexcept
+{
+  return m_tail.load(std::memory_order_relaxed).tag();
+}
+
+template <typename T>
+bool MSQueue<T>::pop(T* element, State* head_state)
 {
   NodePtr old_head;
   NodePtr old_tail;
@@ -258,8 +270,8 @@ bool MSQueue<T>::pop(T* element, uint16_t* state)
     {
       if (next.value() == nullptr)
       {
-        if (state != nullptr)
-          *state = old_tail.tag();
+        if (head_state != nullptr)
+          *head_state = old_tail.tag();
         return false;
       }
       m_tail.compare_exchange_weak(old_tail,
@@ -273,8 +285,8 @@ bool MSQueue<T>::pop(T* element, uint16_t* state)
                                                          old_head.tag() + 1),
                                        std::memory_order_release))
       {
-        if (state != nullptr)
-          *state = old_head.tag();
+        if (head_state != nullptr)
+          *head_state = old_head.tag();
         delete old_head.value();
         return true;
       }
@@ -284,20 +296,20 @@ bool MSQueue<T>::pop(T* element, uint16_t* state)
 
 template <typename T>
 typename MSQueue<T>::PopResult MSQueue<T>::try_pop(T* element,
-                                                   uint16_t old_head_tag,
-                                                   uint16_t* state)
+                                                   State old_head_state,
+                                                   State* head_state)
 {
   NodePtr old_head = m_head.load(std::memory_order_relaxed);
   NodePtr old_tail = m_tail.load(std::memory_order_relaxed);
   NodePtr next = old_head.value()->next.load(std::memory_order_relaxed);
 
-  if (old_head.tag() == old_head_tag)
+  if (old_head.tag() == old_head_state)
   {
     if (old_head.value() == old_tail.value())
     {
       if (next.value() == nullptr)
       {
-        *state = old_tail.tag();
+        *head_state = old_tail.tag();
         return PopResult::EmptyQueue;
       }
       m_tail.compare_exchange_strong(old_tail,
