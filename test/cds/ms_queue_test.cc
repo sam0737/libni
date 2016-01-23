@@ -65,7 +65,7 @@ TEST_CASE("MSQueue-ABACounter")
       for (int i = 0; i < 999; ++i)
       {
         int value;
-        uint16_t state;
+        MSQueue<int>::State state;
         while (!queue.pop(&value, &state))
           std::this_thread::sleep_for(std::chrono::milliseconds(1));
         sum += value;

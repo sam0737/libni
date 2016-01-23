@@ -46,17 +46,17 @@ public:
   using Element = T;
   using State = uint16_t;
 
-  class Node
+  class NI_CACHELINE_ALIGNED Node
   {
   public:
     using Ptr = TaggedPtr<Node>;
     using AtomicPtr = AtomicTaggedPtr<Ptr>;
 
-    T value;
+    Element value;
     AtomicPtr next;
 
-    explicit Node(const T& item);
-    explicit Node(T&& item);
+    explicit Node(const Element& item);
+    explicit Node(Element&& item);
   };
 
   enum PopResult
@@ -101,14 +101,14 @@ public:
   ///                         `state` is not null.
   ///
   /// \return false if the queue is empty
-  bool pop(T* element, State* head_state = nullptr);
+  bool pop(Element* element, State* head_state = nullptr);
 
   /// \brief Try to pop an element from the queue
   ///
   /// \param [out] state Location to store the state of the queue
   ///
   /// \return See `PopResult`
-  PopResult try_pop(T* element, State old_head_state, State* head_state);
+  PopResult try_pop(Element* element, State old_head_state, State* head_state);
 
 private:
   using NodePtr = typename Node::Ptr;
@@ -121,14 +121,14 @@ private:
 };
 
 template <typename T>
-MSQueue<T>::Node::Node(const T& item)
+MSQueue<T>::Node::Node(const Element& item)
   : value(item)
   , next()
 {
 }
 
 template <typename T>
-MSQueue<T>::Node::Node(T&& item)
+MSQueue<T>::Node::Node(Element&& item)
   : value(std::move(item))
   , next()
 {
@@ -137,7 +137,7 @@ MSQueue<T>::Node::Node(T&& item)
 template <typename T>
 MSQueue<T>::MSQueue()
 {
-  Node* node = new Node(T());
+  Node* node = new Node(Element());
   m_head.store(NodePtr(node), std::memory_order_relaxed);
   m_tail.store(NodePtr(node), std::memory_order_relaxed);
 }
@@ -251,7 +251,7 @@ typename MSQueue<T>::State MSQueue<T>::tail_state() const noexcept
 }
 
 template <typename T>
-bool MSQueue<T>::pop(T* element, State* head_state)
+bool MSQueue<T>::pop(Element* element, State* head_state)
 {
   NodePtr old_head;
   NodePtr old_tail;
@@ -295,7 +295,7 @@ bool MSQueue<T>::pop(T* element, State* head_state)
 }
 
 template <typename T>
-typename MSQueue<T>::PopResult MSQueue<T>::try_pop(T* element,
+typename MSQueue<T>::PopResult MSQueue<T>::try_pop(Element* element,
                                                    State old_head_state,
                                                    State* head_state)
 {
