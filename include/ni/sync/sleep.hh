@@ -18,60 +18,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #pragma once
-#include <atomic>
-#include <type_traits>
-
-#include <ni/sync/sleep.hh>
+#include <time.h>
+#include <x86intrin.h>
 
 namespace ni
 {
 
-// This has to be POD
-struct SpinLock
+class Pause
 {
-  bool locked;
+public:
+  Pause(uint32_t max_spins) noexcept;
 
-  bool try_lock() noexcept;
-  void lock() noexcept;
-  void unlock() noexcept;
+  void operator()() noexcept;
+  void reset() noexcept;
 
 private:
-  std::atomic<bool>* self() noexcept;
+  uint32_t m_max_spins;
+  uint32_t m_spins;
 };
 
-inline bool SpinLock::try_lock() noexcept
+Pause::Pause(uint32_t max_spins) noexcept
+  : m_max_spins(max_spins)
+  , m_spins(0)
 {
-  bool tmp = false;
-  return self()->compare_exchange_strong(tmp, true, std::memory_order_acquire,
-                                         std::memory_order_relaxed);
 }
 
-inline void SpinLock::lock() noexcept
+void Pause::operator()() noexcept
 {
-  Pause pause(2048);
-  std::atomic<bool>* flag = self();
-  while (true)
+  if (m_spins < m_max_spins)
   {
-    while (flag->load(std::memory_order_relaxed))
-      pause();
-
-    bool tmp = false;
-    if (flag->compare_exchange_weak(tmp, true, std::memory_order_acquire,
-                                    std::memory_order_relaxed))
-      return;
+    ++m_spins;
+    __pause();
+  }
+  else
+  {
+    struct timespec ts = { 0, 500000 };
+    nanosleep(&ts, nullptr);
   }
 }
 
-inline void SpinLock::unlock() noexcept
+void Pause::reset() noexcept
 {
-  self()->store(false, std::memory_order_release);
+  m_spins = 0;
 }
-
-inline std::atomic<bool>* SpinLock::self() noexcept
-{
-  return reinterpret_cast<std::atomic<bool>*>(&locked);
-}
-
-static_assert(std::is_pod<SpinLock>::value, "SpinLock should be a POD type");
 
 } // namespace ni
