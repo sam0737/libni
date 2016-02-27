@@ -18,15 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #pragma once
-#include <ni/preprocessor.hh>
 
-template <typename T>
-constexpr T NI_CACHELINE_SIZE = T(64);
+namespace ni
+{
 
-#define NI_CACHELINE_ALIGNED alignas(NI_CACHELINE_SIZE<size_t>)
+namespace details
+{
 
-#define NI_PADDING_AFTER(size)                                                 \
-  static_assert((size) % NI_CACHELINE_SIZE<size_t> != 0,                       \
-                "No need to add padding here!");                               \
-  char NI_NEW_VAR(                                                             \
-    padding_)[NI_CACHELINE_SIZE<size_t> - (size) % NI_CACHELINE_SIZE<size_t>]
+thread_local extern bool GET_EH_GLOBALS_CALLED;
+
+} // namespace details
+
+unsigned int uncaught_exceptions();
+
+} // namespace ni

@@ -26,6 +26,7 @@ add_library(ni STATIC
   ${headers}
   ${src_headers}
   ${BACKWARD_ENABLE}
+  exception.cc
   hash/jump_consistent_hash.cc
   logging/common.cc
   logging/logger.cc

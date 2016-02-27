@@ -21,3 +21,7 @@
 
 #define NI_LIKELY(x) __builtin_expect(!!(x), 1)
 #define NI_UNLIKELY(x) __builtin_expect(!!(x), 0)
+
+#define NI_CONCAT_IMPL(x, y) x##y
+#define NI_CONCAT(x, y) NI_CONCAT_IMPL(x, y)
+#define NI_NEW_VAR(prefix) NI_CONCAT(prefix, __COUNTER__)

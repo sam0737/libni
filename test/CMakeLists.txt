@@ -57,5 +57,6 @@ add_subdirectory(hash)
 
 add_tests(
   logging
+  scope_guard
   tagged_ptr
 )

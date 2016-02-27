@@ -17,16 +17,43 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#pragma once
-#include <ni/preprocessor.hh>
+#include <ni/exception.hh>
 
-template <typename T>
-constexpr T NI_CACHELINE_SIZE = T(64);
+#include <cxxabi.h>
 
-#define NI_CACHELINE_ALIGNED alignas(NI_CACHELINE_SIZE<size_t>)
+namespace ni
+{
 
-#define NI_PADDING_AFTER(size)                                                 \
-  static_assert((size) % NI_CACHELINE_SIZE<size_t> != 0,                       \
-                "No need to add padding here!");                               \
-  char NI_NEW_VAR(                                                             \
-    padding_)[NI_CACHELINE_SIZE<size_t> - (size) % NI_CACHELINE_SIZE<size_t>]
+namespace details
+{
+
+thread_local bool GET_EH_GLOBALS_CALLED = false;
+
+// Declaration:
+//
+// struct __cxa_eh_globals {
+//  __cxa_exception* caughtExceptions;
+//  unsigned int uncaughtExceptions;
+//};
+
+} // namespace details
+
+unsigned int uncaught_exceptions()
+{
+  using namespace __cxxabiv1;
+  __cxa_eh_globals* globals;
+  if (details::GET_EH_GLOBALS_CALLED)
+  {
+    globals = __cxa_get_globals_fast();
+  }
+  else
+  {
+    globals = __cxa_get_globals();
+    details::GET_EH_GLOBALS_CALLED = true;
+  }
+  return *reinterpret_cast<unsigned int*>(
+    reinterpret_cast<__cxa_exception**>(globals) + 1);
+}
+
+} // namespace ni
+
