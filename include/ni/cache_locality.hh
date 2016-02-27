@@ -29,5 +29,7 @@ constexpr T NI_CACHELINE_SIZE = T(64);
 #define NI_NEW_VAR(prefix) NI_INDIRECTLY_CONCAT(prefix, __COUNTER__)
 
 #define NI_PADDING_AFTER(size)                                                 \
+  static_assert((size) % NI_CACHELINE_SIZE<size_t> != 0,                       \
+                "No need to add padding here!");                               \
   char NI_NEW_VAR(                                                             \
     padding_)[NI_CACHELINE_SIZE<size_t> - (size) % NI_CACHELINE_SIZE<size_t>]
