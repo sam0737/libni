@@ -6,7 +6,7 @@
 	url = https://github.com/sakra/cotire.git
 [submodule "catch"]
 	path = thirdparty/catch
-	url = https://github.com/philsquared/Catch.git
+	url = https://github.com/0x1997/Catch.git
 [submodule "pcg"]
 	path = thirdparty/pcg
 	url = https://github.com/imneme/pcg-cpp.git
