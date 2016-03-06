@@ -46,7 +46,7 @@ add_compile_options(-std=gnu++1z)
 
 ExternalProject_Add(cppformat
   GIT_REPOSITORY    https://github.com/cppformat/cppformat.git
-  GIT_TAG           804ad8f4df7e01259374a1d2f458775f1b2d1164
+  GIT_TAG           6883d6e72491eee7f8e91577d3c4538d980df59e
   CMAKE_ARGS        -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   BUILD_BYPRODUCTS  ${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}cppformat${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
