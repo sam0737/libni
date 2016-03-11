@@ -39,7 +39,8 @@ int FileSink::open(int fd)
   }
 
   m_stream = fdopen(fd, "a");
-  LOG_IF(!m_stream, NI_FATAL, NI_PERROR, "fdopen");
+  if (!m_stream)
+    NI_FATAL_ERRNO("fdopen");
 
   // Assuming the FILE* is accessed exclusively by the logger thread, internal
   // locking is not needed.
@@ -50,7 +51,8 @@ int FileSink::open(int fd)
 int FileSink::open(string_view filename)
 {
   int fd = ::open(filename.data(), O_WRONLY | O_APPEND | O_CREAT, 0644);
-  LOG_IF(fd == -1, NI_FATAL, NI_PERROR, "Failed to open {}", filename.data());
+  if (fd == -1)
+    NI_FATAL_ERRNO("Failed to open {}", filename.data());
   return open(fd) == -1 ? -1 : fd;
 }
 

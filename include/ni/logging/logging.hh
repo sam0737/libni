@@ -30,32 +30,28 @@
   do                                                                           \
   {                                                                            \
     fflush(stdout);                                                            \
-    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT "\n",           \
-                   NI_FILE_PATH, __LINE__, ##__VA_ARGS__);                     \
+    fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT "\n", NI_FILE_PATH, \
+               __LINE__, ##__VA_ARGS__);                                       \
   } while (0)
 
 #define NI_PERROR(FMT, ...)                                                    \
   do                                                                           \
   {                                                                            \
     fflush(stdout);                                                            \
-    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT ": %s\n",       \
-                   NI_FILE_PATH, __LINE__, ##__VA_ARGS__, NI_ERR_NAME(errno)); \
+    fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT ": %s\n",           \
+               NI_FILE_PATH, __LINE__, ##__VA_ARGS__, NI_ERRNO);               \
   } while (0)
 
-#define NI_PERROR_EN(FMT, ERRNO, ...)                                          \
+#define NI_FATAL(FMT, ...)                                                     \
   do                                                                           \
   {                                                                            \
     fflush(stdout);                                                            \
-    ni::fmt::print(stderr, "\033[31mERROR\033[0m [{}:{}] " FMT ": %s\n",       \
-                   NI_FILE_PATH, __LINE__, ##__VA_ARGS__, NI_ERR_NAME(errno)); \
-  } while (0)
-
-#define NI_FATAL(ACTION, FMT, ...)                                             \
-  do                                                                           \
-  {                                                                            \
-    ACTION(FMT, ##__VA_ARGS__);                                                \
+    fmt::print(stderr, "\033[31mFATAL\033[0m [{}:{}] " FMT "\n", NI_FILE_PATH, \
+               __LINE__, ##__VA_ARGS__);                                       \
     exit(EXIT_FAILURE);                                                        \
   } while (0)
+
+#define NI_FATAL_ERRNO(FMT, ...) NI_FATAL(FMT ": {}", ##__VA_ARGS__, NI_ERRNO)
 
 #if !defined(LOG_LEVEL) || !defined(LOGF_LEVEL)
 #include <ni/logging/capture.hh>
@@ -87,15 +83,6 @@
 #define LOGF_ERROR(LOGGER, ...) LOGF_LEVEL(LOGGER, Error, ##__VA_ARGS__)
 #define LOGF_CRITICAL(LOGGER, ...) LOGF_LEVEL(LOGGER, Critical, ##__VA_ARGS__)
 
-#define LOGF_PERROR_EN(LOGGER, FMT, ERRNO, ...)                                \
-  LOGF_ERROR(LOGGER, FMT, ##__VA_ARGS__) << ": " << NI_ERR_NAME(ERRNO)
-
-#define LOGF_PERROR(LOGGER, FMT, ...)                                          \
-  LOGF_PERROR_EN(LOGGER, FMT, errno, ##__VA_ARGS__)
-
-#define LOG_IF(CONDITION, ACTION, ...)                                         \
-  if (CONDITION)                                                               \
-    ACTION(__VA_ARGS__);
 
 namespace ni
 {

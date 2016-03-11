@@ -80,7 +80,7 @@ inline Capture::Capture(Logger* logger, LogSeverity severity, const char* file,
   struct timespec now_ts;
   // use CLOCK_REALTIME if needed
   if (clock_gettime(CLOCK_REALTIME_COARSE, &now_ts))
-    NI_FATAL(NI_PERROR, "clock_gettime");
+    NI_FATAL_ERRNO("clock_gettime");
 
   struct tm now_tm;
   localtime_r(&now_ts.tv_sec, &now_tm);
