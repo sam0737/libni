@@ -53,7 +53,7 @@ target_compile_options(ni PUBLIC
 )
 
 target_link_libraries(ni PUBLIC
-  cppformat::static
+  cppformat_static
   pthread
 )
 

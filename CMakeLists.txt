@@ -27,6 +27,9 @@ project(libni C CXX)
 
 # Third party dependencies
 set(deps ${PROJECT_SOURCE_DIR}/thirdparty)
+set(deps_headers ${CMAKE_BINARY_DIR}/include/ni/thirdparty)
+file(MAKE_DIRECTORY ${deps_headers})
+file(COPY ${deps}/pcg/include/ DESTINATION ${deps_headers})
 
 # CMake modules
 include(CTest)
@@ -41,19 +44,29 @@ file(MAKE_DIRECTORY
   ${CMAKE_BINARY_DIR}/lib/
 )
 
-# set C++ std version
+# Set C++ std version
 add_compile_options(-std=gnu++1z)
 
+# Prepare thirdparty dependencies
 ExternalProject_Add(cppformat
   GIT_REPOSITORY    https://github.com/cppformat/cppformat.git
   GIT_TAG           6883d6e72491eee7f8e91577d3c4538d980df59e
   CMAKE_ARGS        -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   BUILD_BYPRODUCTS  ${CMAKE_BINARY_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}cppformat${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
+ExternalProject_Add_Step(cppformat bundle_headers
+  DEPENDEES install
+  DEPENDERS done
+  COMMENT "copying include/cppformat to include/ni/thirdparty/"
+  COMMAND rm -rf ${deps_headers}/cppformat
+  COMMAND cp -a <INSTALL_DIR>/include/cppformat ${deps_headers}/
+)
 ExternalProject_Get_Property(cppformat BUILD_BYPRODUCTS)
-add_library(cppformat::static STATIC IMPORTED)
-set_target_properties(cppformat::static PROPERTIES IMPORTED_LOCATION ${BUILD_BYPRODUCTS})
-add_dependencies(cppformat::static cppformat)
+set(cppformat_static_file ${BUILD_BYPRODUCTS})
+add_library(cppformat_static STATIC IMPORTED)
+set_target_properties(cppformat_static
+  PROPERTIES IMPORTED_LOCATION ${cppformat_static_file})
+add_dependencies(cppformat_static cppformat)
 
 set(BACKWARD_TESTS FALSE)
 set(STACK_WALKING_UNWIND TRUE)
@@ -100,6 +113,7 @@ endif()
 
 # Installation directories
 install(DIRECTORY include/ni DESTINATION include)
-install(FILES ${CMAKE_BINARY_DIR}/include/ni/config.hh DESTINATION include/ni)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/include/ni DESTINATION include)
+install(FILES ${cppformat_static_file} DESTINATION lib)
 
 # docs
