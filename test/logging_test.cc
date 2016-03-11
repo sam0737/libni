@@ -35,7 +35,7 @@ TEST_CASE("Logging")
   LogService service(/*queue_size=*/16);
   {
     std::unique_ptr<FileSink> sink(new FileSink(LogSeverity::Debug));
-    sink->open("ni-logger.log");
+    sink->open("/tmp/ni-logger.log");
     std::unique_ptr<Logger> logger(
       new Logger(LogSeverity::Debug, OverflowStrategy::Retry));
     logger->add_sink(std::move(sink));

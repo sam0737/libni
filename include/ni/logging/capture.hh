@@ -70,11 +70,12 @@ private:
 inline Capture::Capture(Logger* logger, LogSeverity severity, const char* file,
                         int line)
   : m_logger(logger)
-  , m_enabled(severity >= logger->level())
-  , m_message(m_enabled ? new LogMessage(logger, severity) : nullptr)
 {
+  m_enabled = logger && severity >= logger->level();
   if (!m_enabled)
     return;
+
+  m_message.reset(new LogMessage(logger, severity));
 
   struct timespec now_ts;
   // use CLOCK_REALTIME if needed

@@ -24,6 +24,7 @@
 #include <ni/string_view.hh>
 
 #define NI_ERR_NAME(ERRNO) ni::logging::ERRNO_NAMES[ERRNO]
+#define NI_ERRNO NI_ERR_NAME(errno)
 
 #define NI_ERROR(FMT, ...)                                                     \
   do                                                                           \
@@ -87,7 +88,7 @@
 #define LOGF_CRITICAL(LOGGER, ...) LOGF_LEVEL(LOGGER, Critical, ##__VA_ARGS__)
 
 #define LOGF_PERROR_EN(LOGGER, FMT, ERRNO, ...)                                \
-  LOGF_ERROR(LOGGER, FMT, ##__VA_ARGS__) << ": " << NI_ERR_NAME(errno)
+  LOGF_ERROR(LOGGER, FMT, ##__VA_ARGS__) << ": " << NI_ERR_NAME(ERRNO)
 
 #define LOGF_PERROR(LOGGER, FMT, ...)                                          \
   LOGF_PERROR_EN(LOGGER, FMT, errno, ##__VA_ARGS__)
@@ -101,10 +102,12 @@ namespace ni
 namespace logging
 {
 class LogService;
+class Logger;
 
 // Singleton interface
-LogService& init(size_t queue_size);
-LogService& service();
+LogService* init(size_t queue_size);
+LogService* service();
+Logger* logger(const std::string& name);
 void start();
 void stop();
 

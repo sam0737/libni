@@ -26,26 +26,35 @@ namespace logging
 {
 LogService* service_instance = nullptr;
 
-LogService& init(size_t queue_size)
+LogService* init(size_t queue_size)
 {
+  if (service_instance)
+    delete service_instance;
   service_instance = new LogService(queue_size);
-  return *service_instance;
+  return service_instance;
 }
 
-LogService& service()
+LogService* service()
+{
+  return service_instance;
+}
+
+Logger* logger(const std::string& name)
 {
   assert(service_instance);
-  return *service_instance;
+  return service_instance->get(name);
 }
 
 void start()
 {
-  service().start();
+  assert(service_instance);
+  service_instance->start();
 }
 
 void stop()
 {
-  service().stop();
+  assert(service_instance);
+  service_instance->stop();
 }
 
 } // namespace logging
