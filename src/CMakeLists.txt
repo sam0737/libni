@@ -58,3 +58,5 @@ target_link_libraries(ni PUBLIC
 )
 
 cotire(ni)
+
+install(TARGETS ni ARCHIVE DESTINATION lib)

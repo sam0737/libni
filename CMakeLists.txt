@@ -99,11 +99,7 @@ if(BUILD_TESTING)
 endif()
 
 # Installation directories
-install(DIRECTORY   ${CMAKE_BINARY_DIR}/bin
-                    ${CMAKE_BINARY_DIR}/lib
-                    ${CMAKE_BINARY_DIR}/man
-                    ${CMAKE_BINARY_DIR}/share
-        DESTINATION ${CMAKE_INSTALL_PREFIX}
-        USE_SOURCE_PERMISSIONS)
+install(DIRECTORY include/ni DESTINATION include)
+install(FILES ${CMAKE_BINARY_DIR}/include/ni/config.hh DESTINATION include/ni)
 
 # docs
