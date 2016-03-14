@@ -46,7 +46,7 @@ void LogWorker::start(pthread_attr_t* attrs)
 {
   assert(!m_thread);
   pthread_create(&m_thread, attrs, LogWorker::start_thread, this);
-  pthread_setname_np(m_thread, "LogWorker");
+  pthread_setname_np(m_thread, "Logging");
 }
 
 void* LogWorker::start_thread(void* args)
