@@ -34,7 +34,6 @@ struct LogMessage;
 class Sink
 {
 public:
-  explicit Sink(LogSeverity level) noexcept;
   virtual ~Sink(){};
   virtual void write(LogMessage* msg) = 0;
   virtual void flush() = 0;
@@ -42,6 +41,7 @@ public:
 protected:
   LogSeverity m_level;
 
+  explicit Sink(LogSeverity level) noexcept;
   bool should_accept(LogMessage* msg) const noexcept;
 };
 
@@ -55,28 +55,43 @@ inline bool Sink::should_accept(LogMessage* msg) const noexcept
   return msg->severity >= m_level;
 }
 
-// A simple sink for files (which should not be accessed outside of this class)
+/// \brief Writing to stdout or stderr
+class StdStreamSink : public Sink
+{
+public:
+  StdStreamSink(LogSeverity level, FILE* stream,
+                bool unlocked = false) noexcept;
+  ~StdStreamSink() override;
+  /// @inherit
+  void write(LogMessage* msg) override;
+  /// @inherit
+  void flush() override;
+
+private:
+  FILE* m_stream;
+  bool m_unlocked;
+};
+
+/// \brief A simple sink for writing to files
 class FileSink : public Sink
 {
 public:
-  FileSink(LogSeverity level);
+  FileSink(LogSeverity level) noexcept;
   ~FileSink() override;
-  // Returns the fd on success so it can be preserved when daemonizing. Returns
-  // -1 on error.
+  /// \return fd on success so it can be preserved when daemonizing.
+  ///         -1 on error.
   int open(int fd);
   int open(string_view filename);
-  // @inherit
+  /// @inherit
   void write(LogMessage* msg) override;
-  // @inherit
+  /// @inherit
   void flush() override;
 
 private:
   FILE* m_stream;
 };
 
-inline FileSink::FileSink(LogSeverity level)
-  : Sink(level)
-  , m_stream()
+inline FileSink::FileSink(LogSeverity level) noexcept : Sink(level), m_stream()
 {
 }
 

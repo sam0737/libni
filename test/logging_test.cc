@@ -28,16 +28,16 @@
 #include <ni/logging/sink.hh>
 
 using namespace ni;
+using namespace ni::logging;
 
 TEST_CASE("Logging")
 {
-  using namespace ni::logging;
   LogService service(/*queue_size=*/16);
   {
-    std::unique_ptr<FileSink> sink(new FileSink(LogSeverity::Debug));
+    auto logger =
+      std::make_unique<Logger>(LogSeverity::Debug, OverflowStrategy::Retry);
+    auto sink = std::make_unique<FileSink>(LogSeverity::Debug);
     sink->open("/tmp/ni-logger.log");
-    std::unique_ptr<Logger> logger(
-      new Logger(LogSeverity::Debug, OverflowStrategy::Retry));
     logger->add_sink(std::move(sink));
     service.add_logger("console", std::move(logger));
     service.start();

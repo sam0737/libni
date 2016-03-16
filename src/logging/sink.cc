@@ -30,6 +30,32 @@ namespace ni
 namespace logging
 {
 
+StdStreamSink::StdStreamSink(LogSeverity level, FILE* stream,
+                             bool unlocked) noexcept : Sink(level),
+                                                       m_stream(stream),
+                                                       m_unlocked(unlocked)
+{
+  if (unlocked)
+    __fsetlocking(m_stream, FSETLOCKING_BYCALLER);
+}
+
+StdStreamSink::~StdStreamSink()
+{
+  flush();
+}
+
+void StdStreamSink::write(LogMessage* msg)
+{
+  assert(msg);
+  if (should_accept(msg))
+    fwrite(msg->writer.data(), msg->writer.size(), 1, m_stream);
+}
+
+void StdStreamSink::flush()
+{
+  fflush(m_stream);
+}
+
 int FileSink::open(int fd)
 {
   if (posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED) == -1)
