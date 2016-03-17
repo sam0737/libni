@@ -44,8 +44,11 @@ file(MAKE_DIRECTORY
   ${CMAKE_BINARY_DIR}/lib/
 )
 
-# Set C++ std version
-add_compile_options(-std=gnu++1z)
+# Set global gcc options
+add_compile_options(
+  -std=gnu++1z
+  -mcx16  # For CMPXCHG16B
+)
 
 # Prepare thirdparty dependencies
 ExternalProject_Add(cppformat
