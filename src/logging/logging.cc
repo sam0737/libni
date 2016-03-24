@@ -41,8 +41,7 @@ LogService* service()
 
 Logger* logger(const std::string& name)
 {
-  assert(service_instance);
-  return service_instance->get(name);
+  return service_instance ? service_instance->get(name) : nullptr;
 }
 
 void start()
