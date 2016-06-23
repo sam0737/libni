@@ -21,7 +21,7 @@
 #include <array>
 #include <cstring>
 #include <limits>
-//#include <type_traits>
+#include <random>
 
 #include <ni/random.hh>
 #include <ni/string_view.hh>
