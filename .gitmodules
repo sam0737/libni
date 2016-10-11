@@ -10,3 +10,6 @@
 [submodule "pcg"]
 	path = thirdparty/pcg
 	url = https://github.com/imneme/pcg-cpp.git
+[submodule "thirdparty/cppformat"]
+	path = thirdparty/cppformat
+	url = https://github.com/cppformat/cppformat.git

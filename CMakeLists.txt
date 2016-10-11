@@ -49,14 +49,14 @@ add_compile_options(-std=gnu++1z)
 
 # Prepare thirdparty dependencies
 ExternalProject_Add(cppformat
-  GIT_REPOSITORY    https://github.com/cppformat/cppformat.git
-  GIT_TAG           a99891e7a5f6c8a164d271b1aa0f09e7d13c7de4
+# GIT_REPOSITORY    https://github.com/cppformat/cppformat.git
+# GIT_TAG           a99891e7a5f6c8a164d271b1aa0f09e7d13c7de4
+  SOURCE_DIR        ${CMAKE_SOURCE_DIR}/thirdparty/cppformat
   CMAKE_ARGS        -DFMT_TEST=OFF -DFMT_DOC=OFF -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
   BUILD_BYPRODUCTS  ${CMAKE_BINARY_DIR}/lib/libcppformat.a
 )
 ExternalProject_Add_Step(cppformat bundle_headers
   DEPENDEES install
-  DEPENDERS done
   COMMENT "copying include/cppformat to include/ni/thirdparty/"
   COMMAND rm -rf ${deps_headers}/cppformat
   COMMAND cp -a <INSTALL_DIR>/include/cppformat ${deps_headers}/
